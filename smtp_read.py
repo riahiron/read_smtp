@@ -15,7 +15,7 @@ from pymongo import MongoClient
 
 ORG_EMAIL   = "@gmail.com"
 FROM_EMAIL  = "ronytest61" + ORG_EMAIL
-FROM_PWD    = "$$$$$$$$"
+FROM_PWD    = "rony_test_61"
 #SMTP_SERVER = "imap.gmail.com"
 
 SMTP_SERVER = "pop.gmail.com"
@@ -40,10 +40,9 @@ def read_email_from_gmail():
         id_list = mail_ids.split()   
         first_email_id = int(id_list[0])
         latest_email_id = int(id_list[-1])
-        print str(latest_email_id)
-
-
-        for i in range(latest_email_id,first_email_id, -1):
+       
+        for i in range(latest_email_id,first_email_id-1, -1):
+            EmailDict={}
             typ, data = mail.fetch(i, '(RFC822)' )
 
             for response_part in data:
@@ -73,10 +72,15 @@ def read_email_from_gmail():
                         
                     
 
-                    for i in ( 'email_subject', 'email_from','body'):
-                        EmailDict[i] = locals()[i]
-                    ReturnDict.append(EmailDict)
+                    for z in ( 'email_subject', 'email_from','body'):
+                        # try without the body anc check if the key issue  resolves
+                        #for i in ( 'email_subject', 'email_from'):
+                        EmailDict[z] = locals()[z]
+                    print (EmailDict)
+            ReturnDict.append(EmailDict)
 
+
+            
 
         mail.close()
         return ReturnDict
@@ -86,7 +90,8 @@ def read_email_from_gmail():
         print str(e)
 
 def removeNonAscii(s):
-    if ord(s) < 48 or ord(s) > 127: return ''
+    import re
+    return (re.sub(r'\W+', '',s))
 
 
 def word_count(string):
@@ -102,6 +107,9 @@ def word_count(string):
     return my_dict
 
 
+def splitlines(data_string):
+    return [s for s in data_string.splitlines()]
+
 
 def connect_to_mongod(_input_):
 
@@ -112,7 +120,7 @@ def connect_to_mongod(_input_):
 
     #db = client.test
     cluster="cluster0-shard-00-00-i24ll.mongodb.net:27017,cluster0-shard-00-01-i24ll.mongodb.net:27017,cluster0-shard-00-02-i24ll.mongodb.net"
-    mongodbstr ="mongodb://user_name:password@"+cluster+"/MongoDB?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin"
+    mongodbstr ="mongodb://riahiron:Neta_Amir2018@"+cluster+"/MongoDB?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin"
     #mongodbstr ="mongodb://riahiron:Neta_Amir2018@mycluster0-shard-00-00.mongodb.net:27017,mycluster0-shard-00-01.mongodb.net:27017,mycluster0-shard-00-02.mongodb.net:27017/admin?ssl=true&replicaSet=Mycluster0-shard-0&authSource=admin"
 
     try:
@@ -122,8 +130,9 @@ def connect_to_mongod(_input_):
         posts = db.mail_data
         
         #print(client.server_info())
-        post_id = posts.insert_one(_input_)
+        post_id = posts.insert_many(_input_)
 
+        client.close()
     except Exception as e:
         print(e)
     else:
@@ -132,24 +141,35 @@ def connect_to_mongod(_input_):
         pass
 
 if __name__ == "__main__":
+    dictval={}
+
     dictval=read_email_from_gmail()
     
-    for key, value in dictval[0].iteritems() :
-        print key
+    #I have a bug , it seems that the email data is populated twice,
+    #while one is missing
+
+    print('$$$')
+    print(dictval)
+    
 
     i=0
     for x in dictval:
-        str=dictval[i].get('body',None)
-        listofword=word_count(str)
+        
+        bodydata=dictval[i].get('body',None)
+        #print(splitlines(str))
+        
+        #listofword=word_count(str)
         #print(listofword)
 
 
-        filtered_list = dict(filter(lambda x: x[1] >2, listofword.items()))
-        print(filtered_list)
+        #filtered_list = dict(filter(lambda x: x[1] >2, listofword.items()))
+        #print(filtered_list)
 
-        dictval[i]['key_words']=filtered_list
-        connect_to_mongod(dictval[i])
+        dictval[i]['key_words']=word_count(bodydata)
+        
+        #print (dictval[i]['key_words'].values())
         #connect_to_mongod(listofword)
         i=+1
-    
+    connect_to_mongod(dictval)
+  
     
