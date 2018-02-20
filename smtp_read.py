@@ -15,16 +15,11 @@ from pymongo import MongoClient
 
 ORG_EMAIL   = "@gmail.com"
 FROM_EMAIL  = "ronytest61" + ORG_EMAIL
-FROM_PWD    = "rony_test_61"
+FROM_PWD    = "*******"
 #SMTP_SERVER = "imap.gmail.com"
 
 SMTP_SERVER = "pop.gmail.com"
 SMTP_PORT   = 993
-
-
-#SERVER = "pop.gmail.com"
-#USER  = "ronytest61@gmail.com"
-#PASSWORD = "rony_test_61"
 
 def read_email_from_gmail():
     try:
@@ -120,8 +115,7 @@ def connect_to_mongod(_input_):
 
     #db = client.test
     cluster="cluster0-shard-00-00-i24ll.mongodb.net:27017,cluster0-shard-00-01-i24ll.mongodb.net:27017,cluster0-shard-00-02-i24ll.mongodb.net"
-    mongodbstr ="mongodb://riahiron:Neta_Amir2018@"+cluster+"/MongoDB?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin"
-    #mongodbstr ="mongodb://riahiron:Neta_Amir2018@mycluster0-shard-00-00.mongodb.net:27017,mycluster0-shard-00-01.mongodb.net:27017,mycluster0-shard-00-02.mongodb.net:27017/admin?ssl=true&replicaSet=Mycluster0-shard-0&authSource=admin"
+    mongodbstr ="mongodb://riahiron:pass@"+cluster+"/MongoDB?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin"
 
     try:
         client = pymongo.MongoClient(mongodbstr)
