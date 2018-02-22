@@ -1,2 +1,2 @@
-# read_smtp
-read smpt mail and parse data into a mongodb database
+# Lab 03 of MongoDB Aggregation FrameWork
+
